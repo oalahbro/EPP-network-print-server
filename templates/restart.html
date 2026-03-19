@@ -35,7 +35,7 @@
       }
 
       setTimeout(function () {
-        window.location.href = "http://localhost:5000";
+        window.location.href = window.location.origin;
       }, 3000); // Tunggu 3 detik sebelum redirect
 
       window.onload = updateCountdown;

@@ -10,7 +10,11 @@
 <body>
 <div class="container">
     <h1>EPP v2.2</h1><h2>Printer Server</h2>
-    
+
+    {% if error %}
+    <div style="color: red; margin-bottom: 10px; font-weight: bold;">{{ error }}</div>
+    {% endif %}
+
     <form method="POST">
         <label for="default_printer">Default Printer:</label>
         <select id="default_printer" name="default_printer">
@@ -26,7 +30,7 @@
         <label for="max_reprint">Max Reprint:</label>
         <input type="number" id="max_reprint" name="max_reprint" value="{{ config.MAX_REPRINT }}" required>
         <br>
-    
+
         <button class="glass" type="submit">Save</button>
     </form>
 
@@ -37,15 +41,16 @@
     <button onclick="refreshLogs()" class="refresh-button">🔄</button>
     <div id="logsTab">
         <h2>Logs</h2>
-        <div class="log-container" id="logContainer">
+        <div class="log-container" id="logContainer" style="white-space: pre-wrap;">
             {% for line in logs[-30:] %}
-                <li class="log-line">{{ line | safe }}</li>
+                <li class="log-line">{{ line }}</li>
             {% endfor %}
         </div>
     </div>
 
     <div id="historyTab" style="display:none;">
         <h2>Print History</h2>
+        <button class="glass" type="button" onclick="clearHistory()" style="margin-bottom: 8px;">🗑️ Clear All</button>
 
         <div class="log-container" id="queueContainer" style="background:#fff; color:#000;">
             <table width="100%" border="1" cellpadding="5" style="border-collapse: collapse;">
@@ -61,8 +66,8 @@
                     <td>{{ loop.index }}</td>
                     <td>{{ job.timestamp.split('.')[0] }}</td>
                     <td>{{ job.printer }}</td>
-                    <td 
-                        {% if job.printcount != 0 and job.print_count >= config.MAX_REPRINT %}
+                    <td
+                        {% if job.print_count != 0 and job.print_count >= config.MAX_REPRINT %}
                             style="color: red; font-weight: bold;"
                         {% endif %}
                     >{{ job.print_count }} Times</td>
@@ -71,6 +76,7 @@
                         {% if config.MAX_REPRINT > job.print_count %}
                         <button type="button" title="Reprint Receipt" onclick="reprint({{ job.id }})">🖨️</button>
                         {% endif %}
+                        <button type="button" title="Delete" onclick="deleteJob({{ job.id }})">🗑️</button>
                     </td>
                 </tr>
                 {% endfor %}

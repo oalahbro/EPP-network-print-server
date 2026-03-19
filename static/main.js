@@ -1,18 +1,3 @@
-function logFixer() {
-    document.querySelectorAll(".log-line").forEach(function (el) {
-        el.innerHTML = el.innerHTML
-            .replace(/ð/g, "🚀")  // Ganti karakter yang salah dengan emoji aslinya
-            .replace(/ð/g, "🛠️") // Tambahkan pattern lain jika diperlukan
-            .replace(/ð¨ï¸/g, "🖨️") // Tambahkan pattern lain jika diperlukan
-            .replace(/ð/g, "🔗") // Tambahkan pattern lain jika diperlukan
-            .replace(/â/g, "✅") // Tambahkan pattern lain jika diperlukan
-            .replace(/ð¨/g, "🖶") // Tambahkan pattern lain jika diperlukanb'
-            .replace(/ð/g, "📃") // Tambahkan pattern lain jika diperlukanb'
-            .replace(//g, "\n") // Tambahkan pattern lain jika diperlukan
-            .replace(//g, "\n"); // Tambahkan pattern lain jika diperlukan
-    });
-};
-
 function refreshLogs() {
     fetch(window.location.href) // Mengambil ulang halaman dashboard
         .then(response => response.text())
@@ -23,9 +8,7 @@ function refreshLogs() {
             let newQueue = doc.getElementById("queueContainer").innerHTML;
 
             document.getElementById("queueContainer").innerHTML = newQueue; // Update log
-            document.getElementById("logContainer").innerHTML = newLogs; // Update log         
-
-            logFixer(); // Panggil ulang fungsi untuk memperbaiki karakter
+            document.getElementById("logContainer").innerHTML = newLogs; // Update log
         })
         .catch(error => console.error("Error fetching logs:", error));
 }
@@ -86,8 +69,44 @@ function viewJob(jobId) {
 }
 
 function hexToString(hex) {
+    if (!hex) return '';
     let bytes = new Uint8Array(hex.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
     return new TextDecoder().decode(bytes);
+}
+
+function deleteJob(jobId) {
+    fetch(`/history/delete/${jobId}`, { method: "POST" })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                showNotification("🗑️ Job deleted");
+                refreshLogs();
+            } else {
+                showNotification("❌ " + data.message);
+            }
+        })
+        .catch(error => {
+            console.error(error);
+            showNotification("❌ Server error");
+        });
+}
+
+function clearHistory() {
+    if (!confirm("Hapus semua history?")) return;
+    fetch("/history/clear", { method: "POST" })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                showNotification("🗑️ History cleared");
+                refreshLogs();
+            } else {
+                showNotification("❌ " + data.message);
+            }
+        })
+        .catch(error => {
+            console.error(error);
+            showNotification("❌ Server error");
+        });
 }
 
 function showModal(content) {
@@ -114,4 +133,6 @@ function showNotification(message) {
         notif.remove();
     }, 2000);
 }
-document.addEventListener("DOMContentLoaded", logFixer);
+
+// Auto-refresh every 10 seconds
+setInterval(refreshLogs, 10000);
