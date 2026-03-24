@@ -35,6 +35,7 @@ dist/
 *.log
 *.bak
 *.txt
+!requirements.txt
 
 # =========================
 # OS
