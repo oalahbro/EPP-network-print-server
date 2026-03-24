@@ -4,37 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='icon.png') }}">
-    <title>EPP Print Server v2.2</title>
+    <title>EPP Print Server v3.0</title>
     <link href="{{ url_for('static', filename='style.css') }}" type="text/css" rel="stylesheet" />
 </head>
 <body>
 <div class="container">
-    <h1>EPP v2.2</h1><h2>Printer Server</h2>
-    
-    <form method="POST">
-        <label for="default_printer">Default Printer:</label>
-        <select id="default_printer" name="default_printer">
-            <option value="">-- Pilih Default Printer --</option>
-            {% for printer in printers %}
-                <option value="{{ printer }}" {% if printer == default_printer %}selected{% endif %}>
-                    {{ printer }}
-                </option>
-            {% endfor %}
-        </select>
-        <label for="port">Port:</label>
-        <input type="number" id="port" name="port" value="{{ config.PORT }}" required>
-        <label for="max_reprint">Max Reprint:</label>
-        <input type="number" id="max_reprint" name="max_reprint" value="{{ config.MAX_REPRINT }}" required>
-        <br>
-    
-        <button class="glass" type="submit">Save</button>
-    </form>
+    <h1>EPP v3.0</h1><h2>Multi-Printer Server</h2>
 
-    <div class="tab-buttons" style="display:flex; gap:8px; margin-bottom:10px; margin-top:8px;">
-        <button class="glass" type="button" onclick="showTab('logs')">📜 Logs</button>
-        <button class="glass" type="button" onclick="showTab('history')">🧾 History</button>
+    <h3>Printers</h3>
+    <div id="printerList">
+        <div class="loading">Loading printers...</div>
     </div>
-    <button onclick="refreshLogs()" class="refresh-button">🔄</button>
+    <button class="glass add-printer-btn" type="button" onclick="addPrinter()">+ Add Printer</button>
+
+    <div class="tab-buttons" style="display:flex; gap:8px; margin-bottom:10px; margin-top:16px;">
+        <button class="glass" type="button" onclick="showTab('logs')">Logs</button>
+        <button class="glass" type="button" onclick="showTab('history')">History</button>
+    </div>
+    <button onclick="refreshLogs()" class="refresh-button">&#x1f504;</button>
     <div id="logsTab">
         <h2>Logs</h2>
         <div class="log-container" id="logContainer">
@@ -61,16 +48,10 @@
                     <td>{{ loop.index }}</td>
                     <td>{{ job.timestamp.split('.')[0] }}</td>
                     <td>{{ job.printer }}</td>
-                    <td 
-                        {% if job.printcount != 0 and job.print_count >= config.MAX_REPRINT %}
-                            style="color: red; font-weight: bold;"
-                        {% endif %}
-                    >{{ job.print_count }} Times</td>
+                    <td>{{ job.print_count }} Times</td>
                     <td style="display: flex; gap: 5px">
-                        <button type="button" title="View Receipt" onclick="viewJob({{ job.id }})">👁️</button>
-                        {% if config.MAX_REPRINT > job.print_count %}
-                        <button type="button" title="Reprint Receipt" onclick="reprint({{ job.id }})">🖨️</button>
-                        {% endif %}
+                        <button type="button" title="View Receipt" onclick="viewJob({{ job.id }})">&#x1f441;&#xfe0f;</button>
+                        <button type="button" title="Reprint Receipt" onclick="reprint({{ job.id }})">&#x1f5a8;&#xfe0f;</button>
                     </td>
                 </tr>
                 {% endfor %}
@@ -83,7 +64,7 @@
     <div class="modal-box" id="body">
         <div class="modal-header">
             <label for="view receipt">View receipt</label>
-            <button class="modal-close" onclick="closeModal()">×</button>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
         </div>
         <div class="modal-content">
             <pre id="modalContent" style="margin-top: 0;"></pre>
@@ -92,7 +73,7 @@
 </div>
 
 <footer>
-    <p>© 2025 <a href="https://github.com/oalahbro" target="_blank">EPP</a>. All rights reserved.</p>
+    <p>&copy; 2025 <a href="https://github.com/oalahbro" target="_blank">EPP</a>. All rights reserved.</p>
 </footer>
 <script src="{{ url_for('static', filename='main.js') }}"></script>
 </body>
