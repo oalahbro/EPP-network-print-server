@@ -25,6 +25,13 @@
         <input type="number" id="port" name="port" value="{{ config.PORT }}" required>
         <label for="max_reprint">Max Reprint:</label>
         <input type="number" id="max_reprint" name="max_reprint" value="{{ config.MAX_REPRINT }}" required>
+        <label for="cut_mode">Cut Mode:</label>
+        <select id="cut_mode" name="cut_mode">
+            <option value="default" {% if config.CUT_MODE == 'default' %}selected{% endif %}>Default (No Modify)</option>
+            <option value="full" {% if config.CUT_MODE == 'full' %}selected{% endif %}>Full Cut</option>
+            <option value="partial" {% if config.CUT_MODE == 'partial' %}selected{% endif %}>Partial Cut</option>
+            <option value="none" {% if config.CUT_MODE == 'none' %}selected{% endif %}>No Cut</option>
+        </select>
         <br>
     
         <button class="glass" type="submit">Save</button>
@@ -47,7 +54,20 @@
     <div id="historyTab" style="display:none;">
         <h2>Print History</h2>
 
+        <div style="margin-bottom:8px; display:flex; align-items:center; gap:8px;">
+            <label for="historyDate">Tanggal:</label>
+            <select id="historyDate" onchange="loadHistoryForDate(this.value)">
+                <option value="{{ today_str }}" selected>Hari ini ({{ today_str }})</option>
+                {% for d in backup_dates %}
+                    {% if d != today_str %}
+                    <option value="{{ d }}">{{ d }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+
         <div class="log-container" id="queueContainer" style="background:#fff; color:#000;">
+            <div id="historyTableWrap" data-date="{{ today_str }}" data-today="{{ today_str }}" data-max-reprint="{{ config.MAX_REPRINT }}">
             <table width="100%" border="1" cellpadding="5" style="border-collapse: collapse;">
                 <tr>
                     <th>ID</th>
@@ -61,8 +81,8 @@
                     <td>{{ loop.index }}</td>
                     <td>{{ job.timestamp.split('.')[0] }}</td>
                     <td>{{ job.printer }}</td>
-                    <td 
-                        {% if job.printcount != 0 and job.print_count >= config.MAX_REPRINT %}
+                    <td
+                        {% if job.print_count != 0 and job.print_count >= config.MAX_REPRINT %}
                             style="color: red; font-weight: bold;"
                         {% endif %}
                     >{{ job.print_count }} Times</td>
@@ -75,6 +95,7 @@
                 </tr>
                 {% endfor %}
             </table>
+            </div>
         </div>
     </div>
 </div>

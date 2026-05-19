@@ -1,7 +1,8 @@
 {
-    "DEFAULT": "DRIVER SERVER",
-    "PRINTER_NAME": "\\\\ESB-LP225\\DRIVER SERVER",
+    "DEFAULT": "POS1",
+    "PRINTER_NAME": "\\\\DESKTOP-SALSAHH\\POS1",
     "PORT": 9100,
     "FLASK_PORT": 5000,
-    "MAX_REPRINT": 7
+    "MAX_REPRINT": 7,
+    "CUT_MODE": "default"
 }
