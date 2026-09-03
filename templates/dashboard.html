@@ -4,13 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='icon.png') }}">
-    <title>EPP Print Server v2.2</title>
+    <title>EPP Print Server v2.4</title>
     <link href="{{ url_for('static', filename='style.css') }}" type="text/css" rel="stylesheet" />
 </head>
 <body>
 <div class="container">
-    <h1>EPP v2.2</h1><h2>Printer Server</h2>
-    
+    <h1>EPP v2.4</h1><h2>Printer Server</h2>
+
+    {% if printer_status and not printer_status.ok %}
+    <div style="background:#fff3cd; border:1px solid #ffc107; color:#856404; padding:10px 14px; border-radius:6px; margin-bottom:12px;">
+        <strong>⚠️ Status Printer:</strong>
+        {{ printer_status.labels | join(', ') }}
+        {% if printer_status.printer %}<br><small>Printer: <code>{{ printer_status.printer }}</code></small>{% endif %}
+        <br><small>Dicek: {{ printer_status.checked_at.split('.')[0] }}</small>
+    </div>
+    {% endif %}
+
+    {% if status.last_error %}
+    <div style="background:#f8d7da; border:1px solid #dc3545; color:#721c24; padding:10px 14px; border-radius:6px; margin-bottom:12px;">
+        <strong>❌ Error Cetak Terakhir:</strong>
+        {{ status.last_error.message }}
+        <br><small>
+            Waktu: {{ status.last_error.timestamp.split('.')[0] }}
+            {% if status.last_error.job_id %} · Job ID: {{ status.last_error.job_id }}{% endif %}
+        </small>
+    </div>
+    {% endif %}
+
+    {% if error_message %}
+    <div style="background:#f8d7da; border:1px solid #dc3545; color:#721c24; padding:10px 14px; border-radius:6px; margin-bottom:12px;">
+        <strong>❌ Konfigurasi tidak valid:</strong> {{ error_message }}
+    </div>
+    {% endif %}
+
     <form method="POST">
         <label for="default_printer">Default Printer:</label>
         <select id="default_printer" name="default_printer">
@@ -33,7 +59,56 @@
             <option value="none" {% if config.CUT_MODE == 'none' %}selected{% endif %}>No Cut</option>
         </select>
         <br>
-    
+
+        <hr class="raster-divider">
+        <div class="raster-section">
+            <strong class="raster-section-title">Unicode/Raster Settings:</strong>
+            <div class="raster-controls">
+                <div class="raster-print-mode">
+                    <label for="print_mode">Print Conversion Mode:</label>
+                    <select id="print_mode" name="print_mode">
+                        <option value="native" {% if config.PRINT_MODE == 'native' %}selected{% endif %}>Native (preserve printer output)</option>
+                        <option value="hybrid" {% if config.PRINT_MODE == 'hybrid' %}selected{% endif %}>Hybrid (rasterize unsupported Unicode only)</option>
+                        <option value="legacy_full_raster" {% if config.PRINT_MODE == 'legacy_full_raster' %}selected{% endif %}>Full Raster (legacy)</option>
+                    </select>
+                </div>
+                <div id="raster-options" class="raster-options">
+                    <div class="raster-settings-row">
+                        <div class="raster-setting">
+                            <label for="raster_font_size">Font Size:</label>
+                            <input type="number" id="raster_font_size" name="raster_font_size" value="{{ config.RASTER_FONT_SIZE }}" min="12" max="48">
+                        </div>
+                        <div class="raster-setting">
+                            <label for="raster_max_width">Max Width (dots):</label>
+                            <div class="raster-width-input">
+                                <input type="number" id="raster_max_width" name="raster_max_width" value="{{ config.RASTER_MAX_WIDTH }}" min="192" max="1200">
+                                <button type="button" class="help-btn" title="Panduan Max Width (dots)">
+                                    <span class="help-icon">ⓘ</span>
+                                    <span class="help-tooltip">
+                                        <strong>Max Width (dots) — Thermal Printer Guide</strong><br><br>
+                                        <table style="font-size:12px; border-collapse:collapse; margin:4px 0;">
+                                            <tr><td style="padding:2px 8px;"><b>Printer</b></td><td style="padding:2px 8px;"><b>DPI</b></td><td style="padding:2px 8px;"><b>Recommended Dots</b></td></tr>
+                                            <tr><td style="padding:2px 8px;">58mm (2")</td><td style="padding:2px 8px;">203</td><td style="padding:2px 8px;">320–384</td></tr>
+                                            <tr><td style="padding:2px 8px;">80mm (3")</td><td style="padding:2px 8px;">203</td><td style="padding:2px 8px;">512–576</td></tr>
+                                            <tr><td style="padding:2px 8px;">80mm (3")</td><td style="padding:2px 8px;">300</td><td style="padding:2px 8px;">760–832</td></tr>
+                                            <tr><td style="padding:2px 8px;">TM-U220 (Dot Matrix)</td><td style="padding:2px 8px;">—</td><td style="padding:2px 8px;"><i>N/A — gunakan Code Page</i></td></tr>
+                                        </table>
+                                        <small>Rumus: <code>dots = lebar_mm × DPI ÷ 25.4</code><br>
+                                        Default <b>576</b> aman untuk 80mm @ 203 DPI (Epson TM-T88V/VI, Star TSP100, Bixolon SRP-350).</small>
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="raster-font-setting">
+                        <label for="raster_font">Font File (optional):</label>
+                        <input type="text" id="raster_font" name="raster_font" value="{{ config.RASTER_FONT }}" placeholder="Leave empty for auto-detect">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+
         <button class="glass" type="submit">Save</button>
     </form>
 

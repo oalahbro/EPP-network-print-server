@@ -1,12 +1,12 @@
 [Setup]
 AppName=EPP Print Server
-AppVersion=2.2
+AppVersion=2.4.1
 AppPublisher=EPP
 AppPublisherURL=https://github.com/oalahbro
 DefaultDirName=C:\EPP
 DefaultGroupName=EPP Print Server
 OutputDir=installer_output
-OutputBaseFilename=EPP_Setup_v2.2
+OutputBaseFilename=EPP_Setup_v2.4.1
 SetupIconFile=EPP.ico
 Compression=lzma2
 SolidCompression=yes
