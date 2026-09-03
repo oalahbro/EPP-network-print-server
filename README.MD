@@ -27,11 +27,13 @@ Edit `conf.json` untuk mengatur printer dan port yang digunakan:
 
 ```json
 {
-  "DEFAULT": "HAKA",
-  "PRINTER_NAME": "\\LAPTOP-EN2ING59\HAKA",
+  "DEFAULT": "",
+  "PRINTER_NAME": "",
   "PORT": 9100
 }
 ```
+
+Pilih printer dari dashboard setelah server dijalankan. Nama printer disimpan persis seperti yang terdaftar di Windows, termasuk printer lokal maupun network share.
 
 ### 4. **Menjalankan Server**
 

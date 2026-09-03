@@ -147,7 +147,7 @@ function viewJob(jobId, dateStr) {
                 let container = document.getElementById("modalContent");
                 container.innerHTML = '';
 
-                // Tampilkan gambar (logo struk)
+                // Show the exact payload sent to the printer when available.
                 if (data.images && data.images.length > 0) {
                     data.images.forEach(b64 => {
                         let img = document.createElement("img");
@@ -159,8 +159,15 @@ function viewJob(jobId, dateStr) {
                     });
                 }
 
-                // Tampilkan teks struk
-                let text = hexToString(data.raw_data);
+                // Show source text separately; image bytes must never be decoded as text.
+                let text = hexToString(data.raw_data || "");
+                let mode = document.createElement("div");
+                mode.textContent = "Mode: " + (data.conversion_mode || "legacy");
+                mode.style.fontFamily = "sans-serif";
+                mode.style.fontSize = "12px";
+                mode.style.marginBottom = "8px";
+                container.prepend(mode);
+
                 let clean = text.replace(/\x1B./g, '')
                     .replace(/\x1D./g, '')
                     .replace(/[\x00-\x09\x0B-\x0C\x0E-\x1F\x7F]/g, '');
@@ -209,4 +216,16 @@ function showNotification(message) {
         notif.remove();
     }, 2000);
 }
-document.addEventListener("DOMContentLoaded", logFixer);
+function toggleRasterOptions() {
+    let mode = document.getElementById("print_mode");
+    let options = document.getElementById("raster-options");
+    if (!mode || !options) return;
+    options.hidden = mode.value === "native";
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    logFixer();
+    let mode = document.getElementById("print_mode");
+    if (mode) mode.addEventListener("change", toggleRasterOptions);
+    toggleRasterOptions();
+});

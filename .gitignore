@@ -53,3 +53,8 @@ Thumbs.db
 # =========================
 .env
 .env.*
+
+# =========================
+# Runtime print history
+# =========================
+print_history.json
