@@ -234,25 +234,6 @@ Test mencakup antara lain:
 
 Beberapa fixture test membaca data contoh dari folder `history/` pada development checkout.
 
-## Build Executable dan Installer
-
-Build dilakukan menggunakan script Windows:
-
-```bat
-build.bat
-```
-
-Script tersebut menjalankan PyInstaller dan kemudian mengompilasi installer menggunakan Inno Setup.
-
-Output utama:
-
-```text
-dist\epp\
-installer_output\
-```
-
-Build ulang setelah source berubah agar executable dan installer memuat versi kode terbaru. File `conf.json` dipasang sebagai konfigurasi eksternal di samping executable; pada instalasi baru, konfigurasi printer harus dipilih melalui dashboard.
-
 ## Menjalankan sebagai Windows Service
 
 Installer mendaftarkan service:
@@ -274,7 +255,6 @@ Service menjalankan print socket dan dashboard. Untuk troubleshooting, periksa:
 - Installer mempertahankan `conf.json` yang sudah ada saat upgrade.
 - Instalasi baru menggunakan konfigurasi printer-neutral, sehingga tidak bergantung pada hostname/share mesin developer.
 - Pilih printer dari dashboard sebelum melakukan print pertama.
-- Build installer hanya setelah executable PyInstaller selesai dibuat dari source terbaru.
 
 ## Lisensi
 
