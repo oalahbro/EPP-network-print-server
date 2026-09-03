@@ -21,7 +21,7 @@ Aplikasi ini ditujukan untuk printer thermal/POS yang menggunakan ESC/POS, terma
 
 - Windows.
 - Python 3.10 atau lebih baru.
-- Printer sudah terpasang dan terlihat di **Windows Printers & scanners**.
+- Driver Printer sudah terinstall**.
 - Dependensi Python:
 
 ```bash
